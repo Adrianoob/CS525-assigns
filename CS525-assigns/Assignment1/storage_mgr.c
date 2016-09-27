@@ -81,7 +81,6 @@ RC closePageFile (SM_FileHandle *fHandle){
     
     
     if (fclose(fHandle->mgmtInfo)==0) {
-        printf("adssad");
         return RC_OK;
     }
     return RC_FILE_NOT_FOUND;
@@ -123,9 +122,9 @@ RC readBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage)
 {
     if(fHandle)
     {
-        if(pageNum>fHandle->totalNumPages)
+        if(pageNum>=fHandle->totalNumPages || pageNum<0)
         {
-            return RC_PAGE_OUTOF_RANGE;
+            return RC_READ_NON_EXISTING_PAGE;
         }
         
         int setPointer = fseek(fHandle->mgmtInfo, PAGE_SIZE*(pageNum), SEEK_SET);
@@ -147,7 +146,7 @@ RC readBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage)
 }
 
 /**
- *  locate the page user is now reading
+ *  find the current page position in a file
  *
  *  @param fHandle saves opend txt file's infomation
  *
@@ -218,7 +217,7 @@ RC readNextBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
  */
 RC readLastBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 {
-    return readBlock(fHandle->totalNumPages, fHandle, memPage);
+    return readBlock(fHandle->totalNumPages-1, fHandle, memPage);
 }
 
 
@@ -239,7 +238,7 @@ RC readLastBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 RC writeBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage){
     
     //make sure pageNum is valid
-    if(pageNum > fHandle->totalNumPages || pageNum < 0){
+    if(pageNum >= fHandle->totalNumPages || pageNum < 0){
         return RC_FILE_NOT_FOUND;
     }
     //set the file pointer
