@@ -123,7 +123,7 @@ RC readBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage)
 {
     if(fHandle)
     {
-        if(pageNum>fHandle->totalNumPages)
+        if(pageNum>=fHandle->totalNumPages)
         {
             return RC_PAGE_OUTOF_RANGE;
         }
@@ -138,7 +138,7 @@ RC readBlock (int pageNum, SM_FileHandle *fHandle, SM_PageHandle memPage)
             return RC_READ_FAIL;
         }
         
-        fHandle->curPagePos=pageNum;
+        fHandle->curPagePos=pageNum+1;
         return RC_OK;
     
     }
@@ -218,7 +218,7 @@ RC readNextBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
  */
 RC readLastBlock (SM_FileHandle *fHandle, SM_PageHandle memPage)
 {
-    return readBlock(fHandle->totalNumPages, fHandle, memPage);
+    return readBlock(fHandle->totalNumPages-1, fHandle, memPage);
 }
 
 
